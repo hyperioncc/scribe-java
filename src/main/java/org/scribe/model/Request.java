@@ -61,9 +61,10 @@ class Request
 
   private void createConnection() throws IOException
   {
+	String effectiveUrl = URLUtils.appendParametersToQueryString(url, querystringParams);
     if (connection == null)
     {
-      connection = (HttpURLConnection) new URL(url).openConnection();
+      connection = (HttpURLConnection) new URL(effectiveUrl).openConnection();
     }
   }
 

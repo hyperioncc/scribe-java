@@ -1,5 +1,6 @@
 package org.scribe.builder.api;
 
+import org.scribe.model.OAuthConfig;
 import org.scribe.model.Token;
 
 public class YammerApi extends DefaultApi10a
@@ -19,7 +20,7 @@ public class YammerApi extends DefaultApi10a
 	}
 	
 	@Override
-	public String getAuthorizationUrl(Token requestToken)
+	public String getAuthorizationUrl(Token requestToken, OAuthConfig config)
 	{
 	  return String.format(AUTHORIZATION_URL, requestToken.getToken());
 	}

@@ -10,12 +10,12 @@ import org.scribe.model.*;
  */
 public class OAuth10aServiceImpl implements OAuthService
 {
-  private static final String NO_SCOPE = null;
+  protected static final String NO_SCOPE = null;
   private static final String VERSION = "1.0";
 
-  private OAuthConfig config;
-  private DefaultApi10a api;
-  private String scope;
+  protected OAuthConfig config;
+  protected DefaultApi10a api;
+  protected String scope;
 
   /**
    * Default constructor
@@ -42,7 +42,7 @@ public class OAuth10aServiceImpl implements OAuthService
     return api.getRequestTokenExtractor().extract(response.getBody());
   }
 
-  private void addOAuthParams(OAuthRequest request, Token token)
+  protected void addOAuthParams(OAuthRequest request, Token token)
   {
     request.addOAuthParameter(OAuthConstants.TIMESTAMP, api.getTimestampService().getTimestampInSeconds());
     request.addOAuthParameter(OAuthConstants.NONCE, api.getTimestampService().getNonce());
@@ -99,16 +99,16 @@ public class OAuth10aServiceImpl implements OAuthService
    */
   public String getAuthorizationUrl(Token requestToken)
   {
-    return api.getAuthorizationUrl(requestToken);
+    return api.getAuthorizationUrl(requestToken, this.config);
   }
-  
-  private String getSignature(OAuthRequest request, Token token)
+
+  protected String getSignature(OAuthRequest request, Token token)
   {
     String baseString = api.getBaseStringExtractor().extract(request);
     return api.getSignatureService().getSignature(baseString, config.getApiSecret(), token.getSecret());
   }
 
-  private void addOAuthHeader(OAuthRequest request)
+  protected void addOAuthHeader(OAuthRequest request)
   {
     String oauthHeader = api.getHeaderExtractor().extract(request);
     request.addHeader(OAuthConstants.HEADER, oauthHeader);

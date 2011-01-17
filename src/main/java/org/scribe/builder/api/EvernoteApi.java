@@ -1,5 +1,6 @@
 package org.scribe.builder.api;
 
+import org.scribe.model.OAuthConfig;
 import org.scribe.model.Token;
 import org.scribe.model.Verb;
 
@@ -32,7 +33,7 @@ public class EvernoteApi extends DefaultApi10a
 	}
 	
 	@Override
-	public String getAuthorizationUrl(Token requestToken)
+	public String getAuthorizationUrl(Token requestToken, OAuthConfig config)
 	{
 	  return String.format(AUTHORIZATION_URL, requestToken.getToken());
 	}
@@ -54,7 +55,7 @@ public class EvernoteApi extends DefaultApi10a
 	  }
 
 	  @Override
-	  public String getAuthorizationUrl(Token requestToken)
+	  public String getAuthorizationUrl(Token requestToken, OAuthConfig config)
 	  {
 	    return String.format(SANDBOX_URL + "?oauth_token=%s", requestToken.getToken());
 	  }

@@ -31,7 +31,7 @@ public class GoogleApi extends DefaultApi10a
   }
   
   @Override
-  public String getAuthorizationUrl(Token requestToken)
+  public String getAuthorizationUrl(Token requestToken, OAuthConfig config)
   {
     return String.format(AUTHORIZATION_URL, requestToken.getToken());
   }

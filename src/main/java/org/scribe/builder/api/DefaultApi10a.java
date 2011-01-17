@@ -124,7 +124,7 @@ public abstract class DefaultApi10a implements Api
    * @param requestToken the request token you need to authorize
    * @return the URL where you should redirect your users
    */
-  public abstract String getAuthorizationUrl(Token requestToken);
+  public abstract String getAuthorizationUrl(Token requestToken, OAuthConfig config);
   
   /**
    * Returns the {@link OAuthService} for this Api

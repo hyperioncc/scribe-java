@@ -19,7 +19,7 @@ public class LinkedInApi extends DefaultApi10a
   }
   
   @Override
-  public String getAuthorizationUrl(Token requestToken)
+  public String getAuthorizationUrl(Token requestToken, OAuthConfig config)
   {
     return String.format(AUTHORIZE_URL, requestToken.getToken());
   }
