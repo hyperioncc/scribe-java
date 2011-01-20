@@ -35,7 +35,13 @@ public class OAuth20ServiceImpl implements OAuthService
    */
   public Token getAccessToken(Token requestToken, Verifier verifier)
   {
-    throw new UnsupportedOperationException("Unsupported operation, please use 'getAuthorizationUrl' and redirect your users there");
+	OAuthRequest request = new OAuthRequest(api.getAccessTokenVerb(), api.getAccessTokenEndpoint());
+	request.addQuerystringParam(OAuthConstants.CLIENT_ID, this.config.getApiKey());
+	request.addQuerystringParam(OAuthConstants.CLIENT_SECRET, this.config.getApiSecret());
+	request.addQuerystringParam(OAuthConstants.VERIFICATION_CODE, verifier.getValue());
+	request.addQuerystringParam(OAuthConstants.REDIRECT_URI, this.config.getCallback());
+	Response response = request.send();
+    return api.getAccessTokenExtractor().extract(response.getBody());
   }
 
   /**

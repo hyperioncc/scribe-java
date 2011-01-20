@@ -10,7 +10,13 @@ public class FacebookApi extends DefaultApi20
   public String getAuthorizationUrl(OAuthConfig config)
   {
     if(OAuthConstants.OUT_OF_BAND.equals(config.getCallback()))
-    	throw new OAuthException("Facebook does not support oob authentication.");
+      throw new OAuthException("Facebook does not support oob authentication.");
+
     return String.format(AUTHORIZE_URL, config.getApiKey(), config.getCallback());
+  }
+
+  @Override
+  public String getAccessTokenEndpoint() {
+    return "https://graph.facebook.com/oauth/access_token";
   }
 }
