@@ -37,7 +37,7 @@ public class FacebookExample
     System.out.println("Now go and authorize Scribe here:");
     System.out.println(authorizationUrl);
     System.out.println("And paste the access token here");
-    System.out.print(">>");
+    System.out.print(">>>");
     Token accessToken = new Token(in.nextLine(), NO_SECRET_NEEDED);
     System.out.println();
 
