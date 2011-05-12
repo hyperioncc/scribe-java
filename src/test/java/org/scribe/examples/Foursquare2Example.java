@@ -1,51 +1,54 @@
 package org.scribe.examples;
 
-import java.util.Scanner;
+import java.util.*;
 
 import org.scribe.builder.*;
 import org.scribe.builder.api.*;
 import org.scribe.model.*;
 import org.scribe.oauth.*;
 
-public class YahooExample
+public class Foursquare2Example
 {
-  private static final String PROTECTED_RESOURCE_URL = "http://social.yahooapis.com/v1/user/A6ROU63MXWDCW3Y5MGCYWVHDJI/profile/status?format=json";
+  private static final String PROTECTED_RESOURCE_URL = "https://api.foursquare.com/v2/users/self/friends?oauth_token=";
+  private static final Token EMPTY_TOKEN = null;
 
   public static void main(String[] args)
   {
+    // Replace these with your own api key and secret
+    String apiKey = "FEGFXJUFANVVDHVSNUAMUKTTXCP1AJQD53E33XKJ44YP1S4I";
+    String apiSecret = "AYWKUL5SWPNC0CTQ202QXRUG2NLZYXMRA34ZSDW4AUYBG2RC";
     OAuthService service = new ServiceBuilder()
-                                .provider(YahooApi.class)
-                                .apiKey("dj0yJmk9TXZDWVpNVVdGaVFmJmQ9WVdrOWMweHZXbkZLTkhVbWNHbzlNVEl5TWprd05qUTJNZy0tJnM9Y29uc3VtZXJzZWNyZXQmeD0wMw--")
-                                .apiSecret("262be559f92a2be20c4c039419018f2b48cdfce9")
-                                .build();
+                                  .provider(Foursquare2Api.class)
+                                  .apiKey(apiKey)
+                                  .apiSecret(apiSecret)
+                                  .callback("http://localhost:9000/")
+                                  .build();
     Scanner in = new Scanner(System.in);
 
-    System.out.println("=== Yahoo's OAuth Workflow ===");
+    System.out.println("=== Foursquare2's OAuth Workflow ===");
     System.out.println();
 
-    // Obtain the Request Token
-    System.out.println("Fetching the Request Token...");
-    Token requestToken = service.getRequestToken();
-    System.out.println("Got the Request Token!");
-    System.out.println();
-
+    // Obtain the Authorization URL
+    System.out.println("Fetching the Authorization URL...");
+    String authorizationUrl = service.getAuthorizationUrl(EMPTY_TOKEN);
+    System.out.println("Got the Authorization URL!");
     System.out.println("Now go and authorize Scribe here:");
-    System.out.println(service.getAuthorizationUrl(requestToken));
-    System.out.println("And paste the verifier here");
+    System.out.println(authorizationUrl);
+    System.out.println("And paste the authorization code here");
     System.out.print(">>");
     Verifier verifier = new Verifier(in.nextLine());
     System.out.println();
-
+    
     // Trade the Request Token and Verfier for the Access Token
     System.out.println("Trading the Request Token for an Access Token...");
-    Token accessToken = service.getAccessToken(requestToken, verifier);
+    Token accessToken = service.getAccessToken(EMPTY_TOKEN, verifier);
     System.out.println("Got the Access Token!");
     System.out.println("(if your curious it looks like this: " + accessToken + " )");
     System.out.println();
 
     // Now let's go and ask for a protected resource!
     System.out.println("Now we're going to access a protected resource...");
-    OAuthRequest request = new OAuthRequest(Verb.GET, PROTECTED_RESOURCE_URL);
+    OAuthRequest request = new OAuthRequest(Verb.GET, PROTECTED_RESOURCE_URL + accessToken.getToken());
     service.signRequest(accessToken, request);
     Response response = request.send();
     System.out.println("Got it! Lets see what we found...");

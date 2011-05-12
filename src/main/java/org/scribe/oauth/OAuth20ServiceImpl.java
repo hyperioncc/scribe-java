@@ -25,22 +25,15 @@ public class OAuth20ServiceImpl implements OAuthService
   /**
    * {@inheritDoc}
    */
-  public void addScope(String scope)
-  {
-    throw new UnsupportedOperationException("OAuth 2 does not use scopes");
-  }
-
-  /**
-   * {@inheritDoc}
-   */
   public Token getAccessToken(Token requestToken, Verifier verifier)
   {
-	OAuthRequest request = new OAuthRequest(api.getAccessTokenVerb(), api.getAccessTokenEndpoint());
-	request.addQuerystringParam(OAuthConstants.CLIENT_ID, this.config.getApiKey());
-	request.addQuerystringParam(OAuthConstants.CLIENT_SECRET, this.config.getApiSecret());
-	request.addQuerystringParam(OAuthConstants.VERIFICATION_CODE, verifier.getValue());
-	request.addQuerystringParam(OAuthConstants.REDIRECT_URI, this.config.getCallback());
-	Response response = request.send();
+    OAuthRequest request = new OAuthRequest(api.getAccessTokenVerb(), api.getAccessTokenEndpoint());
+    request.addQuerystringParameter(OAuthConstants.CLIENT_ID, config.getApiKey());
+    request.addQuerystringParameter(OAuthConstants.CLIENT_SECRET, config.getApiSecret());
+    request.addQuerystringParameter(OAuthConstants.CODE, verifier.getValue());
+    request.addQuerystringParameter(OAuthConstants.REDIRECT_URI, config.getCallback());
+    if(config.hasScope()) request.addQuerystringParameter(OAuthConstants.SCOPE, config.getScope());
+    Response response = request.send();
     return api.getAccessTokenExtractor().extract(response.getBody());
   }
 
@@ -65,7 +58,7 @@ public class OAuth20ServiceImpl implements OAuthService
    */
   public void signRequest(Token accessToken, OAuthRequest request)
   {
-    request.addQuerystringParam(OAuthConstants.ACCESS_TOKEN, accessToken.getToken());
+    request.addQuerystringParameter(OAuthConstants.ACCESS_TOKEN, accessToken.getToken());
   }
 
   /**

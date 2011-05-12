@@ -2,6 +2,7 @@ package org.scribe.model;
 
 import java.io.*;
 import java.net.*;
+import java.nio.charset.*;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -24,6 +25,7 @@ class Request
   private Map<String, String> headers;
   private String payload = null;
   private HttpURLConnection connection;
+  private String charset;
 
   /**
    * Creates a new Http Request
@@ -61,9 +63,10 @@ class Request
 
   private void createConnection() throws IOException
   {
-	String effectiveUrl = URLUtils.appendParametersToQueryString(url, querystringParams);
+    String effectiveUrl = URLUtils.appendParametersToQueryString(url, querystringParams);
     if (connection == null)
     {
+      System.setProperty("http.keepAlive", "false");
       connection = (HttpURLConnection) new URL(effectiveUrl).openConnection();
     }
   }
@@ -87,9 +90,11 @@ class Request
 
   void addBody(HttpURLConnection conn, String content) throws IOException
   {
-    conn.setRequestProperty(CONTENT_LENGTH, String.valueOf(content.getBytes().length));
+    if (this.charset == null)
+      this.charset = Charset.defaultCharset().name();
+    conn.setRequestProperty(CONTENT_LENGTH, String.valueOf(content.getBytes(charset).length));
     conn.setDoOutput(true);
-    conn.getOutputStream().write(content.getBytes());
+    conn.getOutputStream().write(content.getBytes(charset));
   }
 
   /**
@@ -120,7 +125,7 @@ class Request
    * @param key the parameter name
    * @param value the parameter value
    */
-  public void addQuerystringParam(String key, String value)
+  public void addQuerystringParameter(String key, String value)
   {
     this.querystringParams.put(key, value);
   }
@@ -144,22 +149,16 @@ class Request
    * Get a {@link Map} of the query string parameters.
    * 
    * @return a map containing the query string parameters
+   * @throws OAuthException if the URL is not valid
    */
   public Map<String, String> getQueryStringParams()
   {
     try
     {
       Map<String, String> params = new HashMap<String, String>();
-      String query = new URL(url).getQuery();
-      if (query != null)
-      {
-        for (String param : query.split("&"))
-        {
-          String pair[] = param.split("=");
-          params.put(pair[0], pair[1]);
-        }
-      }
-      params.putAll(querystringParams);
+      String queryString = new URL(url).getQuery();
+      params.putAll(URLUtils.queryStringToMap(queryString));
+      params.putAll(this.querystringParams);
       return params;
     }
     catch (MalformedURLException mue)
@@ -251,7 +250,17 @@ class Request
   {
     this.connection.setReadTimeout((int) unit.toMillis(duration));
   }
-  
+
+  /**
+   * Set the charset of the body of the request
+   *
+   * @param charsetName name of the charset of the request
+   */
+  public void setCharset(String charsetName)
+  {
+    this.charset = charsetName;
+  }
+
   /*
    * We need this in order to stub the connection object for test cases
    */

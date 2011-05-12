@@ -1,37 +1,41 @@
 package org.scribe.examples;
 
-import java.util.Scanner;
+import java.util.*;
 
 import org.scribe.builder.*;
 import org.scribe.builder.api.*;
 import org.scribe.model.*;
 import org.scribe.oauth.*;
 
-public class LinkedInExample
+public class LoveFilmExample
 {
-  private static final String PROTECTED_RESOURCE_URL = "http://api.linkedin.com/v1/people/~/connections:(id,last-name)";
-  
+  private static final String NETWORK_NAME = "LoveFilm";
+  private static final String PROTECTED_RESOURCE_URL = "https://api.lovefilm.com/users";
+
   public static void main(String[] args)
   {
-    OAuthService service = new ServiceBuilder()
-                                .provider(LinkedInApi.class)
-                                .apiKey("CiEgwWDkA5BFpNrc0RfGyVuSlOh4tig5kOTZ9q97qcXNrFl7zqk-Ts7DqRGaKDCV")
-                                .apiSecret("dhho4dfoCmiQXrkw4yslork5XWLFnPSuMR-8gscPVjY4jqFFHPYWJKgpFl4uLTM6")
-                                .build();
+    // Replace these with your own api key and secret
+    String apiKey = "your_key";
+    String apiSecret = "your_secret";
+    OAuthService service = new ServiceBuilder().provider(LoveFilmApi.class).apiKey(apiKey).apiSecret(apiSecret).build();
     Scanner in = new Scanner(System.in);
-    
-    System.out.println("=== LinkedIn's OAuth Workflow ===");
+
+    System.out.println("=== " + NETWORK_NAME + "'s OAuth Workflow ===");
     System.out.println();
 
-    // Obtain the Request Token
-    System.out.println("Fetching the Request Token...");
+    // Grab a request token.
+    System.out.println("Fetching request token.");
     Token requestToken = service.getRequestToken();
-    System.out.println("Got the Request Token!");
-    System.out.println();
+    System.out.println("Got it ... ");
+    System.out.println(requestToken.getToken());
 
+    // Obtain the Authorization URL
+    System.out.println("Fetching the Authorization URL...");
+    String authorizationUrl = service.getAuthorizationUrl(requestToken);
+    System.out.println("Got the Authorization URL!");
     System.out.println("Now go and authorize Scribe here:");
-    System.out.println(service.getAuthorizationUrl(requestToken));
-    System.out.println("And paste the verifier here");
+    System.out.println(authorizationUrl);
+    System.out.println("And paste the authorization code here");
     System.out.print(">>");
     Verifier verifier = new Verifier(in.nextLine());
     System.out.println();
@@ -50,10 +54,11 @@ public class LinkedInExample
     Response response = request.send();
     System.out.println("Got it! Lets see what we found...");
     System.out.println();
+    System.out.println(response.getCode());
     System.out.println(response.getBody());
 
     System.out.println();
     System.out.println("Thats it man! Go and build something awesome with Scribe! :)");
-  }
 
+  }
 }

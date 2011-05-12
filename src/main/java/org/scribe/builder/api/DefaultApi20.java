@@ -29,7 +29,7 @@ public abstract class DefaultApi20 implements Api
    */
   public AccessTokenExtractor getAccessTokenExtractor()
   {
-    return new AccessTokenExtractorImpl();
+    return new TokenExtractor20Impl();
   }
 
   /**
@@ -39,7 +39,7 @@ public abstract class DefaultApi20 implements Api
    */
   public Verb getAccessTokenVerb()
   {
-    return Verb.POST;
+    return Verb.GET;
   }
 
   /**
@@ -61,7 +61,7 @@ public abstract class DefaultApi20 implements Api
   /**
    * {@inheritDoc}
    */
-  public OAuthService createService(OAuthConfig config, String scope)
+  public OAuthService createService(OAuthConfig config)
   {
     return new OAuth20ServiceImpl(this, config);
   }
