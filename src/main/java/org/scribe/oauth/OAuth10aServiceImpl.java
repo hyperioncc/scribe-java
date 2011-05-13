@@ -100,7 +100,7 @@ public class OAuth10aServiceImpl implements OAuthService
     return api.getSignatureService().getSignature(baseString, config.getApiSecret(), token.getSecret());
   }
 
-  private void addSignature(OAuthRequest request)
+  protected void addSignature(OAuthRequest request)
   {
     switch (config.getSignatureType())
     {
