@@ -16,7 +16,7 @@ public class FacebookExample
   public static void main(String[] args)
   {
     // Replace these with your own api key and secret
-    String apiKey = "your_app_id";
+    String apiKey = "your_api_key";
     String apiSecret = "your_api_secret";
     OAuthService service = new ServiceBuilder()
                                   .provider(FacebookApi.class)
@@ -35,16 +35,9 @@ public class FacebookExample
     System.out.println("Got the Authorization URL!");
     System.out.println("Now go and authorize Scribe here:");
     System.out.println(authorizationUrl);
-    System.out.println("And paste the authorization code here");
-    System.out.print(">>");
-    Verifier verifier = new Verifier(in.nextLine());
-    System.out.println();
-    
-    // Trade the Request Token and Verfier for the Access Token
-    System.out.println("Trading the Request Token for an Access Token...");
-    Token accessToken = service.getAccessToken(EMPTY_TOKEN, verifier);
-    System.out.println("Got the Access Token!");
-    System.out.println("(if your curious it looks like this: " + accessToken + " )");
+    System.out.println("And paste the access token here");
+    System.out.print(">>>");
+    Token accessToken = new Token(in.nextLine(), NO_SECRET_NEEDED);
     System.out.println();
 
     // Now let's go and ask for a protected resource!
