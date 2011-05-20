@@ -114,6 +114,12 @@ public class OAuth10aServiceImpl implements OAuthService
           request.addQuerystringParameter(entry.getKey(), entry.getValue());
         }
         break;
+      case PostBody:
+    	for (Map.Entry<String, String> entry : request.getOauthParameters().entrySet())
+        {
+          request.addBodyParameter(entry.getKey(), entry.getValue());
+        }
+        break;
     }
   }
 }
