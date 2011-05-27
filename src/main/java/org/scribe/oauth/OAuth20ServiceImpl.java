@@ -7,7 +7,7 @@ public class OAuth20ServiceImpl implements OAuthService
 {
   private static final String VERSION = "2.0";
   
-  private final DefaultApi20 api;
+  protected final DefaultApi20 api;
   protected final OAuthConfig config;
   
   /**
