@@ -26,6 +26,10 @@ class Request
   private String payload = null;
   private HttpURLConnection connection;
   private String charset;
+  private byte[] bytePayload = null;
+  private boolean connectionKeepAlive = false;
+  private Long connectTimeout = null;
+  private Long readTimeout = null;
 
   /**
    * Creates a new Http Request
@@ -66,7 +70,7 @@ class Request
     String effectiveUrl = URLUtils.appendParametersToQueryString(url, querystringParams);
     if (connection == null)
     {
-      System.setProperty("http.keepAlive", "false");
+      System.setProperty("http.keepAlive", connectionKeepAlive ? "true" : "false");
       connection = (HttpURLConnection) new URL(effectiveUrl).openConnection();
     }
   }
@@ -74,10 +78,18 @@ class Request
   Response doSend() throws IOException
   {
     connection.setRequestMethod(this.verb.name());
+    if (connectTimeout != null) 
+    {
+      connection.setConnectTimeout(connectTimeout.intValue());
+    }
+    if (readTimeout != null)
+    {
+      connection.setReadTimeout(readTimeout.intValue());
+    }
     addHeaders(connection);
     if (verb.equals(Verb.PUT) || verb.equals(Verb.POST))
     {
-      addBody(connection, getBodyContents());
+      addBody(connection, getByteBodyContents());
     }
     return new Response(connection);
   }
@@ -88,13 +100,11 @@ class Request
       conn.setRequestProperty(key, headers.get(key));
   }
 
-  void addBody(HttpURLConnection conn, String content) throws IOException
+  void addBody(HttpURLConnection conn, byte[] content) throws IOException
   {
-    if (this.charset == null)
-      this.charset = Charset.defaultCharset().name();
-    conn.setRequestProperty(CONTENT_LENGTH, String.valueOf(content.getBytes(charset).length));
+    conn.setRequestProperty(CONTENT_LENGTH, String.valueOf(content.length));
     conn.setDoOutput(true);
-    conn.getOutputStream().write(content.getBytes(charset));
+    conn.getOutputStream().write(content);
   }
 
   /**
@@ -146,6 +156,16 @@ class Request
   }
 
   /**
+   * Overloaded version for byte arrays
+   *
+   * @param payload
+   */
+  public void addPayload(byte[] payload)
+  {
+    this.bytePayload = payload;
+  }
+
+  /**
    * Get a {@link Map} of the query string parameters.
    * 
    * @return a map containing the query string parameters
@@ -157,7 +177,7 @@ class Request
     {
       Map<String, String> params = new HashMap<String, String>();
       String queryString = new URL(url).getQuery();
-      params.putAll(URLUtils.queryStringToMap(queryString));
+      params.putAll(MapUtils.queryStringToMap(queryString));
       params.putAll(this.querystringParams);
       return params;
     }
@@ -201,10 +221,32 @@ class Request
    * Returns the body of the request
    * 
    * @return form encoded string
+   * @throws OAuthException if the charset chosen is not supported
    */
   public String getBodyContents()
   {
-    return (payload != null) ? payload : URLUtils.formURLEncodeMap(bodyParams);
+    try
+    {
+      return new String(getByteBodyContents(),getCharset());
+    }
+    catch(UnsupportedEncodingException uee)
+    {
+      throw new OAuthException("Unsupported Charset: "+charset, uee);
+    }
+  }
+
+  byte[] getByteBodyContents()
+  {
+    if (bytePayload != null) return bytePayload;
+    String body = (payload != null) ? payload : URLUtils.formURLEncodeMap(bodyParams);
+    try
+    {
+      return body.getBytes(getCharset());
+    }
+    catch(UnsupportedEncodingException uee)
+    {
+      throw new OAuthException("Unsupported Charset: "+getCharset(), uee);
+    }
   }
 
   /**
@@ -228,6 +270,16 @@ class Request
   }
 
   /**
+   * Returns the connection charset. Defaults to {@link Charset} defaultCharset if not set
+   *
+   * @return charset
+   */
+  public String getCharset()
+  {
+    return charset == null ? Charset.defaultCharset().name() : charset;
+  }
+
+  /**
    * Sets the connect timeout for the underlying {@link HttpURLConnection}
    * 
    * @param duration duration of the timeout
@@ -236,7 +288,7 @@ class Request
    */
   public void setConnectTimeout(int duration, TimeUnit unit)
   {
-    this.connection.setConnectTimeout((int) unit.toMillis(duration));
+    this.connectTimeout = unit.toMillis(duration);
   }
 
   /**
@@ -248,7 +300,7 @@ class Request
    */
   public void setReadTimeout(int duration, TimeUnit unit)
   {
-    this.connection.setReadTimeout((int) unit.toMillis(duration));
+    this.readTimeout = unit.toMillis(duration);
   }
 
   /**
@@ -259,6 +311,17 @@ class Request
   public void setCharset(String charsetName)
   {
     this.charset = charsetName;
+  }
+
+  /**
+   * Sets wether the underlying Http Connection is persistent or not.
+   *
+   * @see http://download.oracle.com/javase/1.5.0/docs/guide/net/http-keepalive.html
+   * @param connectionKeepAlive
+   */
+  public void setConnectionKeepAlive(boolean connectionKeepAlive)
+  {
+    this.connectionKeepAlive = connectionKeepAlive;
   }
 
   /*
