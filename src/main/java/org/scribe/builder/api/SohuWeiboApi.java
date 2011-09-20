@@ -1,6 +1,7 @@
 package org.scribe.builder.api;
 
-import org.scribe.model.*;
+import org.scribe.model.OAuthConfig;
+import org.scribe.model.Token;
 
 public class SohuWeiboApi extends DefaultApi10a
 {
@@ -21,7 +22,7 @@ public class SohuWeiboApi extends DefaultApi10a
 	}
 
 	@Override
-	public String getAuthorizationUrl(Token requestToken)
+	public String getAuthorizationUrl(Token requestToken, OAuthConfig config)
 	{
 		return String.format(AUTHORIZE_URL, requestToken.getToken());
 	}

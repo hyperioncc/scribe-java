@@ -1,6 +1,7 @@
 package org.scribe.builder.api;
 
-import org.scribe.model.*;
+import org.scribe.model.OAuthConfig;
+import org.scribe.model.Token;
 
 public class NeteaseWeibooApi extends DefaultApi10a
 {
@@ -10,7 +11,7 @@ public class NeteaseWeibooApi extends DefaultApi10a
 	private static final String AUTHENTICATE_URL = "http://api.t.163.com/oauth/authenticate?oauth_token=%s";
 
 	@Override
-	public String getRequestTokenEndpoint() 
+	public String getRequestTokenEndpoint()
 	{
 		return REQUEST_TOKEN_URL;
 	}
@@ -29,14 +30,14 @@ public class NeteaseWeibooApi extends DefaultApi10a
 	 * 
 	 * via http://open.t.163.com/wiki/index.php?title=%E8%AF%B7%E6%B1%82%E7%94%A8%E6%88%B7%E6%8E%88%E6%9D%83Token(oauth/authorize)
 	 */
-	public String getAuthorizationUrl(Token requestToken)
+	public String getAuthorizationUrl(Token requestToken, OAuthConfig config)
 	{
 		return String.format(AUTHORIZE_URL, requestToken.getToken());
 	}
 
 	/**
 	 * this method is for web client with callback url
-	 * if you're creating a desktop client please call getAuthorizationUrl 
+	 * if you're creating a desktop client please call getAuthorizationUrl
 	 * 
 	 * via http://open.t.163.com/wiki/index.php?title=%E8%AF%B7%E6%B1%82%E7%94%A8%E6%88%B7%E6%8E%88%E6%9D%83Token(oauth/authenticate)
 	 */
