@@ -50,4 +50,10 @@ public interface OAuthService
    * @return the URL where you should redirect your users
    */
   public String getAuthorizationUrl(Token requestToken);
+  
+  /**
+   * Return oauth configuration for this service instance
+   * @return
+   */
+  public OAuthConfig getConfig();
 }

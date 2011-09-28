@@ -122,4 +122,10 @@ public class OAuth10aServiceImpl implements OAuthService
         break;
     }
   }
+
+  @Override
+  public OAuthConfig getConfig()
+  {
+	return this.config;
+  }
 }
