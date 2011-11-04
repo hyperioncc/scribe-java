@@ -21,6 +21,7 @@ public class ServiceBuilder
   private Api api;
   private String scope;
   private SignatureType signatureType;
+  private String referenceId;
   
   /**
    * Default constructor
@@ -136,6 +137,15 @@ public class ServiceBuilder
     this.signatureType = type;
     return this;
   }
+
+  /**
+   * 外部referenceId,如application_id
+   */
+  public ServiceBuilder referenceId(String referenceId)
+  {
+    this.referenceId = referenceId;
+    return this;
+  }
   
   /**
    * Returns the fully configured {@link OAuthService}
@@ -147,6 +157,6 @@ public class ServiceBuilder
     Preconditions.checkNotNull(api, "You must specify a valid api through the provider() method");
     Preconditions.checkEmptyString(apiKey, "You must provide an api key");
     Preconditions.checkEmptyString(apiSecret, "You must provide an api secret");
-    return api.createService(new OAuthConfig(apiKey, apiSecret, callback, signatureType, scope));
+    return api.createService(new OAuthConfig(apiKey, apiSecret, callback, signatureType, scope, referenceId));
   }
 }

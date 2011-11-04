@@ -12,19 +12,21 @@ public class OAuthConfig
   private final String callback;
   private final SignatureType signatureType;
   private final String scope;
+  private final String referenceId;
   
   public OAuthConfig(String key, String secret)
   {
-    this(key, secret, null, null, null);
+    this(key, secret, null, null, null, null);
   }
 
-  public OAuthConfig(String key, String secret, String callback, SignatureType type, String scope)
+  public OAuthConfig(String key, String secret, String callback, SignatureType type, String scope, String refID)
   {
     this.apiKey = key;
     this.apiSecret = secret;
     this.callback = callback != null ? callback : OAuthConstants.OUT_OF_BAND;
     this.signatureType = (type != null) ? type : SignatureType.Header;
     this.scope = scope;
+    this.referenceId = refID;
   }
 
   public String getApiKey()
@@ -55,5 +57,10 @@ public class OAuthConfig
   public boolean hasScope()
   {
     return scope != null;
+  }
+  
+  public String getReferenceId()
+  {
+	return referenceId;
   }
 }
