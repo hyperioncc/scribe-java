@@ -28,6 +28,7 @@ public class OAuth20ServiceImpl implements OAuthService
   public Token getAccessToken(Token requestToken, Verifier verifier)
   {
     OAuthRequest request = new OAuthRequest(api.getAccessTokenVerb(), api.getAccessTokenEndpoint());
+    request.addQuerystringParameter(OAuthConstants.GRANT_TYPE, "authorization_code");
     request.addQuerystringParameter(OAuthConstants.CLIENT_ID, config.getApiKey());
     request.addQuerystringParameter(OAuthConstants.CLIENT_SECRET, config.getApiSecret());
     request.addQuerystringParameter(OAuthConstants.CODE, verifier.getValue());
@@ -73,5 +74,15 @@ public class OAuth20ServiceImpl implements OAuthService
   public OAuthConfig getConfig()
   {
 	return this.config;
+  }
+  
+  public Token refreshToken(Token refreshToken, String sessionHandle)
+  {
+    OAuthRequest request = new OAuthRequest(api.getAccessTokenVerb(), api.getAccessTokenEndpoint());
+    request.addQuerystringParameter(OAuthConstants.GRANT_TYPE, "refresh_token");
+    request.addQuerystringParameter(OAuthConstants.REFRESH_TOKEN, refreshToken.getToken());
+    if(config.hasScope()) request.addQuerystringParameter(OAuthConstants.SCOPE, config.getScope());
+    Response response = request.send();
+    return api.getAccessTokenExtractor().extract(response.getBody());
   }
 }
