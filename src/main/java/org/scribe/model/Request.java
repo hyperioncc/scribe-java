@@ -1,13 +1,20 @@
 package org.scribe.model;
 
-import java.io.*;
-import java.net.*;
-import java.nio.charset.*;
-import java.util.*;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.InetSocketAddress;
+import java.net.MalformedURLException;
+import java.net.Proxy;
+import java.net.URL;
+import java.nio.charset.Charset;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import org.scribe.exceptions.*;
-import org.scribe.utils.*;
+import org.scribe.exceptions.OAuthException;
+import org.scribe.utils.MapUtils;
+import org.scribe.utils.URLUtils;
 
 /**
  * Represents an HTTP Request object
@@ -71,8 +78,20 @@ class Request
     if (connection == null)
     {
       System.setProperty("http.keepAlive", connectionKeepAlive ? "true" : "false");
-      connection = (HttpURLConnection) new URL(effectiveUrl).openConnection();
+      if (this.checkProxyable())
+      {
+    	  Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress("127.0.0.1", 7552)); 
+    	  connection = (HttpURLConnection) new URL(effectiveUrl).openConnection(proxy);
+      }
+      else
+      {
+    	  connection = (HttpURLConnection) new URL(effectiveUrl).openConnection(); 
+      }
     }
+  }
+  
+  private boolean checkProxyable() {
+	  return this.url.matches("^http(s)?://(www|graph)\\.facebook\\.com/.*$") || this.url.matches("^http(s)?://api\\.twitter\\.com/.*$");
   }
 
   Response doSend() throws IOException
