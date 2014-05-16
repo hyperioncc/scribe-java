@@ -1,10 +1,10 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.scribe</groupId>
+  <groupId>denglu.cc</groupId>
   <artifactId>scribe</artifactId>
   <packaging>jar</packaging>
-  <version>1.2.2</version>
+  <version>1.2.2-mod</version>
   <name>Scribe OAuth Library</name>
   <description>The best OAuth library out there</description>
   <url>http://github.com/fernandezpablo85/scribe-java</url>
@@ -82,4 +82,11 @@
       </plugin>
     </plugins>
   </build>
+  <distributionManagement>
+    <repository>
+      <id>deploymentRepo</id>
+      <name>Local Repository</name>
+      <url>http://192.168.2.209:8081/nexus/content/repositories/releases/</url>
+    </repository>
+  </distributionManagement>
 </project>  

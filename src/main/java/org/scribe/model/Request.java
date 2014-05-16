@@ -96,8 +96,15 @@ class Request
 
   Response doSend() throws IOException
   {
+    if (connection.getURL().getProtocol().toLowerCase().contains("https"))
+    {
+      try
+      {
+        Response.trustAllHttpsCertificates();
+      } catch (Exception e) {}
+    }
     connection.setRequestMethod(this.verb.name());
-    if (connectTimeout != null) 
+    if (connectTimeout != null)
     {
       connection.setConnectTimeout(connectTimeout.intValue());
     }
