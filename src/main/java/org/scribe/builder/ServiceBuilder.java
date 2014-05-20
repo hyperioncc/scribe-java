@@ -1,5 +1,6 @@
 package org.scribe.builder;
 
+import java.io.*;
 import org.scribe.builder.api.*;
 import org.scribe.exceptions.*;
 import org.scribe.model.*;
@@ -23,6 +24,7 @@ public class ServiceBuilder
   private SignatureType signatureType;
   private String state;
   private String referenceId;
+  private OutputStream debugStream;
   
   /**
    * Default constructor
@@ -30,6 +32,8 @@ public class ServiceBuilder
   public ServiceBuilder()
   {
     this.callback = OAuthConstants.OUT_OF_BAND;
+    this.signatureType = SignatureType.Header;
+    this.debugStream = null;
   }
   
   /**
@@ -82,7 +86,7 @@ public class ServiceBuilder
    */
   public ServiceBuilder callback(String callback)
   {
-    Preconditions.checkValidOAuthCallback(callback, "Callback must be a valid URL or 'oob'");
+    Preconditions.checkNotNull(callback, "Callback can't be null");
     this.callback = callback;
     return this;
   }
@@ -157,6 +161,19 @@ public class ServiceBuilder
     return this;
   }
   
+  public ServiceBuilder debugStream(OutputStream stream)
+  {
+    Preconditions.checkNotNull(stream, "debug stream can't be null");
+    this.debugStream = stream;
+    return this;
+  }
+
+  public ServiceBuilder debug()
+  {
+    this.debugStream(System.out);
+    return this;
+  }
+  
   /**
    * Returns the fully configured {@link OAuthService}
    * 
@@ -167,6 +184,6 @@ public class ServiceBuilder
     Preconditions.checkNotNull(api, "You must specify a valid api through the provider() method");
     Preconditions.checkEmptyString(apiKey, "You must provide an api key");
     Preconditions.checkEmptyString(apiSecret, "You must provide an api secret");
-    return api.createService(new OAuthConfig(apiKey, apiSecret, callback, signatureType, scope, state, referenceId));
+    return api.createService(new OAuthConfig(apiKey, apiSecret, callback, signatureType, scope, state, referenceId, debugStream));
   }
 }

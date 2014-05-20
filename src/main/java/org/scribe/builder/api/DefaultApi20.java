@@ -22,6 +22,7 @@ import org.scribe.oauth.*;
  */
 public abstract class DefaultApi20 implements Api
 {
+
   /**
    * Returns the access token extractor.
    * 
@@ -31,9 +32,9 @@ public abstract class DefaultApi20 implements Api
   {
     return new TokenExtractor20Impl();
   }
-
+	
   /**
-   * Returns the verb for the access token endpoint (defaults to POST)
+   * Returns the verb for the access token endpoint (defaults to GET)
    * 
    * @return access token endpoint verb
    */
@@ -41,14 +42,14 @@ public abstract class DefaultApi20 implements Api
   {
     return Verb.GET;
   }
-
+	
   /**
    * Returns the URL that receives the access token requests.
    * 
    * @return access token URL
    */
   public abstract String getAccessTokenEndpoint();
-
+	
   /**
    * Returns the URL where you should redirect your users to authenticate
    * your application.

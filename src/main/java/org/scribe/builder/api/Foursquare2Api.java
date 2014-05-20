@@ -11,14 +11,14 @@ public class Foursquare2Api extends DefaultApi20
   @Override
   public String getAccessTokenEndpoint()
   {
-    return "https://foursquare.com/oauth2/access_token";
+    return "https://foursquare.com/oauth2/access_token?grant_type=authorization_code";
   }
 
   @Override
   public String getAuthorizationUrl(OAuthConfig config)
   {
     Preconditions.checkValidUrl(config.getCallback(), "Must provide a valid url as callback. Foursquare2 does not support OOB");
-    return String.format(AUTHORIZATION_URL, config.getApiKey(), URLUtils.formURLEncode(config.getCallback()));
+    return String.format(AUTHORIZATION_URL, config.getApiKey(), OAuthEncoder.encode(config.getCallback()));
   }
 
   @Override

@@ -1,5 +1,7 @@
 package org.scribe.model;
 
+import java.io.*;
+
 /**
  * Parameter object that groups OAuth config values
  * 
@@ -14,21 +16,23 @@ public class OAuthConfig
   private final String scope;
   private final String state;
   private final String referenceId;
+  private final OutputStream debugStream;
   
   public OAuthConfig(String key, String secret)
   {
-    this(key, secret, null, null, null, null, null);
+    this(key, secret, null, null, null, null, null, null);
   }
 
-  public OAuthConfig(String key, String secret, String callback, SignatureType type, String scope, String state, String refID)
+  public OAuthConfig(String key, String secret, String callback, SignatureType type, String scope, String state, String refID, OutputStream stream)
   {
     this.apiKey = key;
     this.apiSecret = secret;
-    this.callback = callback != null ? callback : OAuthConstants.OUT_OF_BAND;
-    this.signatureType = (type != null) ? type : SignatureType.Header;
+    this.callback = callback;
+    this.signatureType = type;
     this.scope = scope;
     this.state = state;
     this.referenceId = refID;
+    this.debugStream = stream;
   }
 
   public String getApiKey()
@@ -69,5 +73,21 @@ public class OAuthConfig
   public String getReferenceId()
   {
 	return referenceId;
+  }
+
+  public void log(String message)
+  {
+    if (debugStream != null)
+    {
+      message = message + "\n";
+      try
+      {
+        debugStream.write(message.getBytes("UTF8"));
+      }
+      catch (Exception e)
+      {
+        throw new RuntimeException("there were problems while writing to the debug stream", e);
+      }
+    }
   }
 }
